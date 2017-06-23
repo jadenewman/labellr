@@ -10,9 +10,8 @@
 
 #' check_dictionary
 #'
-#' @param dictionary a data.frame with columns variable and type
-#' @return nada
-#' @examples
+#' @inheritParams classify
+#'
 check_dictionary <- function(dictionary) {
 
   ## check correct column names supplied
@@ -35,12 +34,11 @@ check_dictionary <- function(dictionary) {
   }
 }
 
-#' check_definitions
+#' check_rules
 #'
-#' @param definitions a data.frame
-#' @return nada
-#' @examples
-check_definitions <- function(data, rules) {
+#' @inheritParams classify
+#'
+check_rules <- function(data, rules) {
 
   ## check correct column names supplied
   names_check <- names(rules)[-1] %in% names(data)

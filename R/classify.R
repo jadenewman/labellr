@@ -19,7 +19,6 @@
 #' value in the data is assumed to have failed the test. If an empty string is entered for the rule,
 #' any value is assumed correct.
 #' @return logical vector indicating which elements of the data match the rule.
-#' @examples
 num_classify <- function(data, rule) {
 
   ## test for valid input
@@ -80,7 +79,6 @@ num_classify <- function(data, rule) {
 #' @param data a character vector of data to be tested against a rule.
 #' @param rule a character vector of length one that specifies the rule to test.
 #' @return logical vector indicating which elements of the data match the rule.
-#' @examples
 char_classify <- function(data, rule) {
   ## test for valid input
   stopifnot(is.vector(data))
@@ -128,7 +126,6 @@ char_classify <- function(data, rule) {
 #' present (1) or absent (0) rules are testable. If an empty string is entered for the rule, any
 #' value is assumed correct.
 #' @return logical vector indicating which elements of the data match the rule.
-#' @examples
 date_classify <- function(data, rule) {
   ## test for valid input
   stopifnot(is.vector(data))
@@ -157,20 +154,40 @@ date_classify <- function(data, rule) {
 
 # classify ----------------------------------------------------------------------------------------
 
-#' classify
+#' @title Deterministic classification
+#'
+#' @description classify performs deterministic classification of rows of a data frame according to
+#' a set of rules. These rules specify allowable values for each particular classification level.
 #'
 #' @param data data.frame whose rows are to be classified according to a set of rules.
-#' @param dictionary data.frame which specifies the data type of the variables in data which are
-#' tested against a rule in rules.
-#' @param rules data.frame. The first column should be the name of the classification variable and
-#' subsequent columns should be the names of the variables which are to be tested against a rule.
+#' @param dictionary Each row of the data frame dictionary specifies a data type for a variable
+#' found in data and rules. There should be two columns in dictionary, variable and type.
+#' The column names in rules should be exactly matched in dictionary and type should be one of num,
+#' char, or date for each variable.
+#' @param rules The first column of this data frame should be the name of the (to be created)
+#' classification variable and subsequent columns should be the names of the variables which
+#' are to be tested against a rule.
 #' Each row of the rules data.frame should contain a classification level in the first column and
 #' from there the rules to test each column against.
 #' @param default_def the default value to be given to all unclassified rows.
-#' @return data.frame with added first column which classifies the data according to a set of rules.
-#' @examples
+#' @details
+#' Rulesets for variable type \strong{num}:
+#' \itemize{
+#'    \item present/absent: blah blah
+#'    \item comparison to a constant: blah blah
+#' }
+#' Rulesets for variable type \strong{char}:
+#' \itemize{
+#'    \item present/absent: blah blah
+#'    \item present in set: blah blah
+#' }
+#' Rulesets for variable type \strong{date}:
+#' \itemize{
+#'    \item present/absent: blah blah
+#' }
+#' @return data.frame with added column classifying the data according to a set of rules.
 #' @export
-classify <- function(data, definitions, default_def = "unknown") {
+classify <- function(data, dictionary, rules, default_def = "unknown") {
   ## check input
   check_dictionary(dictionary)
   check_definitions(data, rules)

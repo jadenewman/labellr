@@ -2,27 +2,47 @@
 % Please edit documentation in R/classify.R
 \name{classify}
 \alias{classify}
-\title{classify}
+\title{Deterministic classification}
 \usage{
 classify(data, dictionary, rules, default_def = "unknown")
 }
 \arguments{
 \item{data}{data.frame whose rows are to be classified according to a set of rules.}
 
-\item{dictionary}{data.frame which specifies the data type of the variables in data which are
-tested against a rule in rules.}
+\item{dictionary}{Each row of the data frame dictionary specifies a data type for a variable
+found in data and rules. There should be two columns in dictionary, variable and type.
+The column names in rules should be exactly matched in dictionary and type should be one of num,
+char, or date for each variable.}
 
-\item{rules}{data.frame. The first column should be the name of the classification variable and
-subsequent columns should be the names of the variables which are to be tested against a rule.
+\item{rules}{The first column of this data frame should be the name of the (to be created)
+classification variable and subsequent columns should be the names of the variables which
+are to be tested against a rule.
 Each row of the rules data.frame should contain a classification level in the first column and
 from there the rules to test each column against.}
 
 \item{default_def}{the default value to be given to all unclassified rows.}
 }
 \value{
-data.frame with added first column which classifies the data according to a set of rules.
+data.frame with added column classifying the data according to a set of rules.
 }
 \description{
-classify
+classify performs deterministic classification of rows of a data frame according to
+a set of rules. These rules specify allowable values for each particular classification level.
+}
+\details{
+Rulesets for variable type \strong{num}:
+\itemize{
+   \item present/absent: blah blah
+   \item comparison to a constant: blah blah
+}
+Rulesets for variable type \strong{char}:
+\itemize{
+   \item present/absent: blah blah
+   \item present in set: blah blah
+}
+Rulesets for variable type \strong{date}:
+\itemize{
+   \item present/absent: blah blah
+}
 }
 
