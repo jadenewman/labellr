@@ -14,16 +14,17 @@
 #'
 #' @param data a numeric vector of data to be tested against a rule.
 #' @param rule a character vector of length one that specifies the rule to test. The rule can either
-#' indicate a value must be present (1) or absent (0) or test the entered value using one of the set
-#' of functions ("==", ">=", "<=", ">", "<"). If an empty string is entered for the rule, any value
-#' is assumed correct.
+#' indicate a value must be present ("1") or absent ("0") or test the entered value using one of the
+#' set of comparison functions ("==", ">=", "<=", ">", "<"). If a comparison function is used any NA
+#' value in the data is assumed to have failed the test. If an empty string is entered for the rule,
+#' any value is assumed correct.
 #' @return logical vector indicating which elements of the data match the rule.
 #' @examples
 num_classify <- function(data, rule) {
 
   ## test for valid input
   stopifnot(is.vector(data))
-  stopifnot(is.character(data))
+  stopifnot(is.numeric(data))
   # make a character and remove whitespace
   rule <- as.character(rule)
   # account for empty character
@@ -48,14 +49,14 @@ num_classify <- function(data, rule) {
 
     ## extracting arguments for test
     val <-  unlist(strsplit(c(rule), split = "[>=]"))
-    # remove empty strings #!
+    # remove empty strings
     val <- val[nchar(val) > 0]
     val <- as.numeric(val)
     vals <- rep(val, length(data))
 
     ## extract function for test
     func <- unlist(strsplit(c(rule), split = "[^>=]"))
-    # remove empty strings #!
+    # remove empty strings
     func <- func[nchar(func) > 0]
     func <- func[!is.na(func)]
 
@@ -65,8 +66,11 @@ num_classify <- function(data, rule) {
     # results of the comparisons/tests
     tmp_res <- do.call(func, args = list(c(data), c(vals)))
   }
+  ## make NA -> FALSE
+  tmp_res <- as.logical(tmp_res)
+  tmp_res[is.na(tmp_res)] <- FALSE
   ## return
-  as.logical(tmp_res)
+  tmp_res
 }
 
 # char_classify ------------------------------------------------------------------------------------
@@ -80,22 +84,39 @@ num_classify <- function(data, rule) {
 char_classify <- function(data, rule) {
   ## test for valid input
   stopifnot(is.vector(data))
-  stopifnot(is.character(data))
-  stopifnot(is.character(rule))
+  if (!is.character(data) & !all(is.na(data))) {
+    stop("character indicated in data dictionary") #!
+  }
 
-  ## allowable character values
-  vals <- rule
+  ## test if non-present rule
+  if(grepl("!", rule)) {
+    ## extract values string should not equal
+    neg_vals <- rule[grep("!", rule)]
+    neg_vals <- unlist(strsplit(neg_vals, "!"))
+    neg_vals <- neg_vals[neg_vals != ""]
+    pos_vals <- rule[-grep("!", rule)]
+      ## if pos_vals empty let it equal empty string
+    if (identical(pos_vals, character(0))) {
+      pos_vals <- ""
+    }
+    ## test for non-presence of values
+    neg_res <- !(data %in% neg_vals)
+  } else {
+    ## no negative results => all true
+    neg_res <- rep(TRUE, length(data))
+    pos_vals <- rule
+  }
 
   ## don't test if any value allowed
-  if(vals[1] == "") {
+  if(pos_vals == "" | is.na(rule)) {   #!
     # any value allow => all TRUE
-    tmp_res <- rep(TRUE, length(data))
+    pos_res <- rep(TRUE, length(data))
   } else {
     ## test against data
-    tmp_res <- data %in% vals
+    pos_res <- data %in% pos_vals
   }
   ## return logical
-  as.logical(tmp_res)
+  as.logical(pos_res * neg_res)
 }
 
 # date_classify -----------------------------------------------------------------------------------
@@ -149,7 +170,11 @@ date_classify <- function(data, rule) {
 #' @return data.frame with added first column which classifies the data according to a set of rules.
 #' @examples
 #' @export
-classify <- function(data, dictionary, rules, default_def = "unknown") {
+classify <- function(data, definitions, default_def = "unknown") {
+  ## check input
+  check_dictionary(dictionary)
+  check_definitions(data, rules)
+
   ## initialise columns to complete
   # add new definitions to the first column
   new_var_name <- names(rules)[1]
@@ -182,7 +207,7 @@ classify <- function(data, dictionary, rules, default_def = "unknown") {
 
       ## call to classify function depending on variable type:
       # variable type
-      var_type <- dictionary[var_name == names(dictionary)]
+      var_type <- dictionary$type[var_name == dictionary$variable]
       # function name (in package)
       f <- paste(var_type, "classify", sep = "_")
       # call function
