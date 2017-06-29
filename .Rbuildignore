@@ -1,3 +1,4 @@
 sandbox.R
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.travis\.yml$

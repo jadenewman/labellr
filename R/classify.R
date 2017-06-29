@@ -190,7 +190,7 @@ date_classify <- function(data, rule) {
 classify <- function(data, dictionary, rules, default_def = "unknown") {
   ## check input
   check_dictionary(dictionary)
-  check_definitions(data, rules)
+  check_rules(data, rules)
 
   ## initialise columns to complete
   # add new definitions to the first column

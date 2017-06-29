@@ -7,7 +7,10 @@
 check_dictionary(dictionary)
 }
 \arguments{
-\item{dictionary}{a data.frame with columns variable and type}
+\item{dictionary}{Each row of the data frame dictionary specifies a data type for a variable
+found in data and rules. There should be two columns in dictionary, variable and type.
+The column names in rules should be exactly matched in dictionary and type should be one of num,
+char, or date for each variable.}
 }
 \description{
 check_dictionary
