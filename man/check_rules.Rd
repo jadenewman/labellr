@@ -7,7 +7,7 @@
 check_rules(data, rules)
 }
 \arguments{
-\item{data}{data.frame whose rows are to be classified according to a set of rules.}
+\item{data}{data.frame whose rows are to be categorised according to a provided set of rules.}
 
 \item{rules}{The first column of this data frame should be the name of the (to be created)
 classification variable and subsequent columns should be the names of the variables which

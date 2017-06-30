@@ -2,12 +2,12 @@
 % Please edit documentation in R/classify.R
 \name{classify}
 \alias{classify}
-\title{Deterministic classification}
+\title{Categorise your data}
 \usage{
 classify(data, dictionary, rules, default_def = "unknown")
 }
 \arguments{
-\item{data}{data.frame whose rows are to be classified according to a set of rules.}
+\item{data}{data.frame whose rows are to be categorised according to a provided set of rules.}
 
 \item{dictionary}{Each row of the data frame dictionary specifies a data type for a variable
 found in data and rules. There should be two columns in dictionary, variable and type.
@@ -26,8 +26,8 @@ from there the rules to test each column against.}
 data.frame with added column classifying the data according to a set of rules.
 }
 \description{
-classify performs deterministic classification of rows of a data frame according to
-a set of rules. These rules specify allowable values for each particular classification level.
+classify performs categorises rows of a data frame according to
+a set of rules. These rules specify allowable values for each particular category level.
 }
 \details{
 Rulesets for variable type \strong{num}:

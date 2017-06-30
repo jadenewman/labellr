@@ -154,12 +154,12 @@ date_classify <- function(data, rule) {
 
 # classify ----------------------------------------------------------------------------------------
 
-#' @title Deterministic classification
+#' @title Categorise your data
 #'
-#' @description classify performs deterministic classification of rows of a data frame according to
-#' a set of rules. These rules specify allowable values for each particular classification level.
+#' @description classify performs categorises rows of a data frame according to
+#' a set of rules. These rules specify allowable values for each particular category level.
 #'
-#' @param data data.frame whose rows are to be classified according to a set of rules.
+#' @param data data.frame whose rows are to be categorised according to a provided set of rules.
 #' @param dictionary Each row of the data frame dictionary specifies a data type for a variable
 #' found in data and rules. There should be two columns in dictionary, variable and type.
 #' The column names in rules should be exactly matched in dictionary and type should be one of num,
