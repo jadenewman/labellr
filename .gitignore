@@ -4,5 +4,4 @@
 .Ruserdata
 labellr.Rproj
 sandbox.R
-.travis.yml
 inst/doc

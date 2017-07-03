@@ -86,15 +86,20 @@ char_classify <- function(data, rule) {
     stop("character indicated in data dictionary") #!
   }
 
+  ## if a multiple input rule split the characters
+  if(grepl(",", rule)) {
+    rule <- unlist(strsplit(rule, ","))
+  }
+
   ## test if non-present rule
-  if(grepl("!", rule)) {
+  if(any(grepl("!", rule))) {
     ## extract values string should not equal
     neg_vals <- rule[grep("!", rule)]
     neg_vals <- unlist(strsplit(neg_vals, "!"))
     neg_vals <- neg_vals[neg_vals != ""]
     pos_vals <- rule[-grep("!", rule)]
       ## if pos_vals empty let it equal empty string
-    if (identical(pos_vals, character(0))) {
+    if(identical(pos_vals, character(0))) {
       pos_vals <- ""
     }
     ## test for non-presence of values
@@ -106,7 +111,7 @@ char_classify <- function(data, rule) {
   }
 
   ## don't test if any value allowed
-  if(pos_vals == "" | is.na(rule)) {   #!
+  if(all(pos_vals == "") | all(is.na(rule))) {   #!
     # any value allow => all TRUE
     pos_res <- rep(TRUE, length(data))
   } else {
@@ -173,17 +178,17 @@ date_classify <- function(data, rule) {
 #' @details
 #' Rulesets for variable type \strong{num}:
 #' \itemize{
-#'    \item present/absent: blah blah
-#'    \item comparison to a constant: blah blah
+#'    \item present/absent: fill in later
+#'    \item comparison to a constant: fill in later
 #' }
 #' Rulesets for variable type \strong{char}:
 #' \itemize{
-#'    \item present/absent: blah blah
-#'    \item present in set: blah blah
+#'    \item present/absent: fill in later
+#'    \item present in set: fill in later
 #' }
 #' Rulesets for variable type \strong{date}:
 #' \itemize{
-#'    \item present/absent: blah blah
+#'    \item present/absent: fill in later
 #' }
 #' @return data.frame with added column classifying the data according to a set of rules.
 #' @export

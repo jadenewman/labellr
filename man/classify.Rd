@@ -32,17 +32,17 @@ a set of rules. These rules specify allowable values for each particular categor
 \details{
 Rulesets for variable type \strong{num}:
 \itemize{
-   \item present/absent: blah blah
-   \item comparison to a constant: blah blah
+   \item present/absent: fill in later
+   \item comparison to a constant: fill in later
 }
 Rulesets for variable type \strong{char}:
 \itemize{
-   \item present/absent: blah blah
-   \item present in set: blah blah
+   \item present/absent: fill in later
+   \item present in set: fill in later
 }
 Rulesets for variable type \strong{date}:
 \itemize{
-   \item present/absent: blah blah
+   \item present/absent: fill in later
 }
 }
 
