@@ -192,14 +192,35 @@ date_classify <- function(data, rule) {
 #' }
 #' @return data.frame with added column classifying the data according to a set of rules.
 #' @export
-classify <- function(data, dictionary, rules, default_def = "unknown") {
-  ## check input
-  check_dictionary(dictionary)
+classify <- function(data, definitions, default_def = "unknown") {
+
+  ## check data
+  # data.frame?
+  stopifnot(is.data.frame(data))
+  # replace
+  data[data == ""] <- NA
+
+  ## check definitions
+  # data.frame?
+  stopifnot(is.data.frame(definitions))
+  # check first row indicates datatypes / categorising variables
+
+
+  # make rules dataframe
+  rules <- definitions[-1,]
+
+  # make data dictionary dataframe
+  new_index <- (definitions[1,] == "addition")[1,]  # remove columns that name categorising variables
+  rd_index <- !new_index
+  var_type <- unlist(definitions[1,rd_index])
+  dictionary <- data.frame(type = var_type, variable = names(var_type))
+
+  # check_dictionary
   check_rules(data, rules)
 
   ## initialise columns to complete
-  # add new definitions to the first column
-  new_var_name <- names(rules)[1]
+  # add new definitions to the first column(s)
+  new_var_name <- names(definitions)[new_index]
   # add in default labels
   new_var <- rep(default_def, nrow(data))
   data <- cbind(new_var, data, stringsAsFactors = FALSE)
