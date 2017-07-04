@@ -1,4 +1,5 @@
 treatment,clinic_date,xray,fmri,surgery_date,complications
-xray,1,1,0,0,0
-fmri,1,0,1,0,0
-surgery,0,0,0,1,
+addition,date,char,char,date,char
+xray,1,y,!y,0,
+fmri,1,!y,y,0,
+surgery,0,!y,!y,1,
