@@ -19,16 +19,19 @@ ext_path <- file.path(package_loc, "extdata")
 
 The motivation behind `labellr` is the following. You need to categorise each row of a data frame into 
 one of (many) possible levels of a summary variable. This categorisation can be done according to a set
-of rules that is defined in advance. However, writing code that performs this categorisation would
+of rules that are defined in advance. Writing code that performs this categorisation may
 be lengthy, making it difficult to debug and understand for newbies. For example, you may have a medical
-dataset that contains detailed descriptions of measurements, diagnosis codes and outcomes but that 
-needs the addition of one or more summary variables to be useful for anlaysis.
-The goal of `labellr` is to minimise the number of lines of code required in categorising the data by allowing the use of tabular files (e.g. MS Excel, Google ??) to define each level of the summary variable. It does this by.. 
+dataset that contains results of various measurements, diagnosis codes and treatment outcomes but that 
+needs the addition of one or more summary variables to be conveniently analysed.
+The goal of `labellr` is to minimise the number of lines of code required in categorising the data by allowing the use of tabular files (e.g. MS Excel) to define each level of the summary variable. It does this by.. 
 As a toy example, suppose a medical clinic performs either X-ray, FMRI or some form of surgery. Using 
-your preferred tabular data editor you define the levels of the summary variable treatment. Entering
+your preferred tabular data editor you outline the rules that define each level of the summary variable 'treatment'. 
+
+
+Entering
 a 1 indicates this value must be present, while entering a 0 indicates this value must be absent. Leaving a cell blank (assuming blank in read into R as NA) will allow that variable to take any value. 
 
 ```{r}
-tmt_def <- read.csv(file.path(ext_path, "treatment_definitions.csv"))
+tmt_def <- read.csv(file.path(ext_path, "treatment_definitions.csv"), stringsAsFactors = FALSE)
 tmt_def
 ```

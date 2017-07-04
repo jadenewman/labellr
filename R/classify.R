@@ -156,7 +156,6 @@ date_classify <- function(data, rule) {
   as.logical(tmp_res)
 }
 
-
 # classify ----------------------------------------------------------------------------------------
 
 #' @title Categorise your data
@@ -276,4 +275,3 @@ classify <- function(data, definitions, default_def = "unknown") {
   ## return dataset with added definitions
   data
 }
-
