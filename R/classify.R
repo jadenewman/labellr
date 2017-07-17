@@ -5,25 +5,30 @@
 # initialised: 01/06/17
 #
 #
-# Contains: num_classify, char_classify, date_classify, classify
+# Contains: numeric_classify, character_classify, date_classify, classify
 ###################################################################################################
 
-# num_classify ------------------------------------------------------------------------------------
+# numeric_classify --------------------------------------------------------------------------------
 
-#' num_classify
+#' numeric_classify
 #'
-#' @param data a numeric vector of data to be tested against a rule.
+#' @param data data.frame whose rows are to be categorised according to a provided set of rules.
+#' @param var_name the current varaible under test #!.
 #' @param rule a character vector of length one that specifies the rule to test. The rule can either
 #' indicate a value must be present ("1") or absent ("0") or test the entered value using one of the
 #' set of comparison functions ("==", ">=", "<=", ">", "<"). If a comparison function is used any NA
 #' value in the data is assumed to have failed the test. If an empty string is entered for the rule,
 #' any value is assumed correct.
 #' @return logical vector indicating which elements of the data match the rule.
-num_classify <- function(data, rule) {
+numeric_classify <- function(var_name, data, rule) {
 
   ## test for valid input
-  stopifnot(is.vector(data))
-  stopifnot(is.numeric(data))
+  stopifnot(is.data.frame(data))
+  stopifnot(is.numeric(data[[var_name]]))
+
+  ## use vector of column of interest
+  var_data <- data[[var_name]]
+
   # make a character and remove whitespace
   rule <- as.character(rule)
   # account for empty character
@@ -35,26 +40,24 @@ num_classify <- function(data, rule) {
   if (rule %in% c("1", "0", "")) {
     ## present/absent rule checks
     if (rule == "") {
-      tmp_res <- rep(TRUE, length(data))
+      tmp_res <- rep(TRUE, length(var_data))
     } else if (rule == "0") {
-        tmp_res <- is.na(data)
-      } else if (rule == "1") {
-          tmp_res <- !is.na(data)
-      }
+      tmp_res <- is.na(var_data)
+    } else if (rule == "1") {
+      tmp_res <- !is.na(var_data)
+    }
   } else {
     ## functional rule
     ## allowable functions
     allowable_funcs <- c("==", ">=", "<=", ">", "<")
 
     ## extracting arguments for test
-    val <-  unlist(strsplit(c(rule), split = "[>=]"))
+    val <-  unlist(strsplit(c(rule), split = "[<>=]"))
     # remove empty strings
     val <- val[nchar(val) > 0]
-    val <- as.numeric(val)
-    vals <- rep(val, length(data))
 
     ## extract function for test
-    func <- unlist(strsplit(c(rule), split = "[^>=]"))
+    func <- unlist(strsplit(c(rule), split = "[^<>=]"))
     # remove empty strings
     func <- func[nchar(func) > 0]
     func <- func[!is.na(func)]
@@ -62,8 +65,18 @@ num_classify <- function(data, rule) {
     # test for valid function
     stopifnot(func %in% allowable_funcs)
 
-    # results of the comparisons/tests
-    tmp_res <- do.call(func, args = list(c(data), c(vals)))
+    if(val %in% names(data)) {
+      # if the rule requires testing against another variable
+      # get that variable
+      comp_data <- data[[val]]
+      tmp_res <- do.call(func, args = list(c(var_data), c(comp_data)))
+    } else {
+      ## results of the comparisons to a constant
+      # allow vectorised comparisons
+      val <- as.numeric(val)
+      vals <- rep(val, length(var_data))
+      tmp_res <- do.call(func, args = list(c(var_data), c(vals)))
+    }
   }
   ## make NA -> FALSE
   tmp_res <- as.logical(tmp_res)
@@ -72,17 +85,20 @@ num_classify <- function(data, rule) {
   tmp_res
 }
 
-# char_classify ------------------------------------------------------------------------------------
+# character_classify ------------------------------------------------------------------------------
 
-#' char_classify
+#' character_classify
 #'
-#' @param data a character vector of data to be tested against a rule.
+#' @param data data.frame whose rows are to be categorised according to a provided set of rules.
+#' @param var_name the current varaible under test #!.
 #' @param rule a character vector of length one that specifies the rule to test.
 #' @return logical vector indicating which elements of the data match the rule.
-char_classify <- function(data, rule) {
+character_classify <- function(var_name, data, rule) {
   ## test for valid input
-  stopifnot(is.vector(data))
-  if (!is.character(data) & !all(is.na(data))) {
+  stopifnot(is.data.frame(data))
+  # make a vector of column of interest
+  var_data <- data[[var_name]]
+  if (!is.character(var_data) & !all(is.na(var_data))) {
     stop("character indicated in data dictionary") #!
   }
 
@@ -98,25 +114,25 @@ char_classify <- function(data, rule) {
     neg_vals <- unlist(strsplit(neg_vals, "!"))
     neg_vals <- neg_vals[neg_vals != ""]
     pos_vals <- rule[-grep("!", rule)]
-      ## if pos_vals empty let it equal empty string
+    ## if pos_vals empty let it equal empty string
     if(identical(pos_vals, character(0))) {
       pos_vals <- ""
     }
     ## test for non-presence of values
-    neg_res <- !(data %in% neg_vals)
+    neg_res <- !(var_data %in% neg_vals)
   } else {
     ## no negative results => all true
-    neg_res <- rep(TRUE, length(data))
+    neg_res <- rep(TRUE, length(var_data))
     pos_vals <- rule
   }
 
   ## don't test if any value allowed
   if(all(pos_vals == "") | all(is.na(rule))) {   #!
     # any value allow => all TRUE
-    pos_res <- rep(TRUE, length(data))
+    pos_res <- rep(TRUE, length(var_data))
   } else {
     ## test against data
-    pos_res <- data %in% pos_vals
+    pos_res <- var_data %in% pos_vals
   }
   ## return logical
   as.logical(pos_res * neg_res)
@@ -126,14 +142,18 @@ char_classify <- function(data, rule) {
 
 #' date_classify
 #'
-#' @param data a date vector of data to be tested against a rule.
+#' @param data data.frame whose rows are to be categorised according to a provided set of rules.
+#' @param var_name the current varaible under test #!.
 #' @param rule a character vector of length one that specifies the rule to test. For date data only
 #' present (1) or absent (0) rules are testable. If an empty string is entered for the rule, any
 #' value is assumed correct.
 #' @return logical vector indicating which elements of the data match the rule.
-date_classify <- function(data, rule) {
+date_classify <- function(var_name, data, rule) {
   ## test for valid input
-  stopifnot(is.vector(data))
+  stopifnot(is.data.frame(data))
+  # make a vector of column of interest
+  var_data <- data[[var_name]]
+
   #stopifnot(is.character(rule))
 
   ## make present/absent (1/0) -> numeric
@@ -141,14 +161,14 @@ date_classify <- function(data, rule) {
 
   if(is.na(rule[1])) {
     # any value allow => all TRUE
-    tmp_res <- rep(TRUE, length(data))
+    tmp_res <- rep(TRUE, length(var_data))
   } else {
     ## test for presence/absence of date
     if(rule[1] == 1) {
-      tmp_res <- !is.na(data)
+      tmp_res <- !is.na(var_data)
     } else {
       if (rule[1] == 0) {
-        tmp_res <- is.na(data)
+        tmp_res <- is.na(var_data)
       }
     }
   }
@@ -160,15 +180,15 @@ date_classify <- function(data, rule) {
 
 #' @title Categorise your data
 #'
-#' @description classify performs categorises rows of a data frame according to
+#' @description Categorise rows of a data frame according to
 #' a set of rules. These rules specify allowable values for each particular category level.
 #'
 #' @param data data.frame whose rows are to be categorised according to a provided set of rules.
-#' @param dictionary Each row of the data frame dictionary specifies a data type for a variable
+#' @param definitions Each row of the data frame dictionary specifies a data type for a variable
 #' found in data and rules. There should be two columns in dictionary, variable and type.
 #' The column names in rules should be exactly matched in dictionary and type should be one of num,
 #' char, or date for each variable.
-#' @param rules The first column of this data frame should be the name of the (to be created)
+#' The first column of this data frame should be the name of the (to be created)
 #' classification variable and subsequent columns should be the names of the variables which
 #' are to be tested against a rule.
 #' Each row of the rules data.frame should contain a classification level in the first column and
@@ -177,17 +197,25 @@ date_classify <- function(data, rule) {
 #' @details
 #' Rulesets for variable type \strong{num}:
 #' \itemize{
-#'    \item present/absent: fill in later
-#'    \item comparison to a constant: fill in later
+#'    \item present/absent: indicate that a value must be present (i.e. cannot be NA) with "1", and
+#'    that a value must be absent (i.e. must be NA) with "0".
+#'    \item comparison to a constant: compare the entered value to a numeric constant (scalar) X
+#'    with any of "==X", ">=X", "<=X", ">X" or "<X". For example, ">=0".
 #' }
 #' Rulesets for variable type \strong{char}:
 #' \itemize{
-#'    \item present/absent: fill in later
-#'    \item present in set: fill in later
+#'    \item takes a specified value: indicate that the value must match a particular character,
+#'    for example "y".
+#'    \item does not take a specified value: indicate that the value must not match a particular
+#'    character, for example "!y" indicates the value must not be "y".
+#'    \item takes a value in a set: indicate that the value must be in a specific character set. Note
+#'    that the elements of the set should be separated by a comma but be a vector of
+#'    length 1 e.g. ("y,n"), rather than ("y","n").
 #' }
 #' Rulesets for variable type \strong{date}:
 #' \itemize{
-#'    \item present/absent: fill in later
+#'    \item present/absent: indicate that a value must be present (i.e. cannot be NA) with "1", and
+#'    that a value must be absent (i.e. must be NA) with "0".
 #' }
 #' @return data.frame with added column classifying the data according to a set of rules.
 #' @export
@@ -202,24 +230,25 @@ classify <- function(data, definitions, default_def = "unknown") {
   ## check definitions
   # data.frame?
   stopifnot(is.data.frame(definitions))
-  # check first row indicates datatypes / categorising variables
+  # check first row indicates allowable datatypes of variables
+  stopifnot(all(unlist(definitions[1,])[-1] %in% c("date", "character", "numeric")))
 
-
-  # make rules dataframe
+  ## make rules and dictionary dataframes
+  # make rules dataframe by removing first column of definitions
   rules <- definitions[-1,]
 
   # make data dictionary dataframe
-  new_index <- (definitions[1,] == "addition")[1,]  # remove columns that name categorising variables
-  rd_index <- !new_index
-  var_type <- unlist(definitions[1,rd_index])
-  dictionary <- data.frame(type = var_type, variable = names(var_type))
+  var_type <- unlist(definitions[1, -1]) # remove first column
+  dictionary <- data.frame(type = var_type, variable = names(var_type),
+    stringsAsFactors = FALSE)
 
-  # check_dictionary
+  ## check_dictionary
+  check_dictionary(dictionary, data)
   check_rules(data, rules)
 
   ## initialise columns to complete
   # add new definitions to the first column(s)
-  new_var_name <- names(definitions)[new_index]
+  new_var_name <- names(definitions)[1]
   # add in default labels
   new_var <- rep(default_def, nrow(data))
   data <- cbind(new_var, data, stringsAsFactors = FALSE)
@@ -239,11 +268,9 @@ classify <- function(data, definitions, default_def = "unknown") {
     ## inner loop along to test (ith) element of rule on
     ## relevant column of dataset
     for (i in col_seq) {
-      ## name, data column and rule to test:
+      ## name of column and rule to test:
       # name of variable on which to test definitions:
       var_name <- names(rules)[i]
-      # extract column of interest in dataset
-      col_data <- data[ ,names(data) == var_name , drop = TRUE]
       # rule to test
       rule <- rules[j, i]
 
@@ -253,7 +280,7 @@ classify <- function(data, definitions, default_def = "unknown") {
       # function name (in package)
       f <- paste(var_type, "classify", sep = "_")
       # call function
-      tmp_res <- do.call(f, args = list(data = col_data, rule = rule))
+      tmp_res <- do.call(f, args = list(var = var_name, data = data, rule = rule))
 
       ## logical results of rule testing
       # uses boolean algebra on element of vectors
