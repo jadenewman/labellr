@@ -4,10 +4,12 @@
 \alias{date_classify}
 \title{date_classify}
 \usage{
-date_classify(data, rule)
+date_classify(var_name, data, rule)
 }
 \arguments{
-\item{data}{a date vector of data to be tested against a rule.}
+\item{var_name}{the current varaible under test #!.}
+
+\item{data}{data.frame whose rows are to be categorised according to a provided set of rules.}
 
 \item{rule}{a character vector of length one that specifies the rule to test. For date data only
 present (1) or absent (0) rules are testable. If an empty string is entered for the rule, any

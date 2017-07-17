@@ -4,17 +4,16 @@
 \alias{classify}
 \title{Categorise your data}
 \usage{
-classify(data, dictionary, rules, default_def = "unknown")
+classify(data, definitions, default_def = "unknown")
 }
 \arguments{
 \item{data}{data.frame whose rows are to be categorised according to a provided set of rules.}
 
-\item{dictionary}{Each row of the data frame dictionary specifies a data type for a variable
+\item{definitions}{Each row of the data frame dictionary specifies a data type for a variable
 found in data and rules. There should be two columns in dictionary, variable and type.
 The column names in rules should be exactly matched in dictionary and type should be one of num,
-char, or date for each variable.}
-
-\item{rules}{The first column of this data frame should be the name of the (to be created)
+char, or date for each variable.
+The first column of this data frame should be the name of the (to be created)
 classification variable and subsequent columns should be the names of the variables which
 are to be tested against a rule.
 Each row of the rules data.frame should contain a classification level in the first column and
@@ -26,23 +25,31 @@ from there the rules to test each column against.}
 data.frame with added column classifying the data according to a set of rules.
 }
 \description{
-classify performs categorises rows of a data frame according to
+Categorise rows of a data frame according to
 a set of rules. These rules specify allowable values for each particular category level.
 }
 \details{
 Rulesets for variable type \strong{num}:
 \itemize{
-   \item present/absent: fill in later
-   \item comparison to a constant: fill in later
+   \item present/absent: indicate that a value must be present (i.e. cannot be NA) with "1", and
+   that a value must be absent (i.e. must be NA) with "0".
+   \item comparison to a constant: compare the entered value to a numeric constant (scalar) X
+   with any of "==X", ">=X", "<=X", ">X" or "<X". For example, ">=0".
 }
 Rulesets for variable type \strong{char}:
 \itemize{
-   \item present/absent: fill in later
-   \item present in set: fill in later
+   \item takes a specified value: indicate that the value must match a particular character,
+   for example "y".
+   \item does not take a specified value: indicate that the value must not match a particular
+   character, for example "!y" indicates the value must not be "y".
+   \item takes a value in a set: indicate that the value must be in a specific character set. Note
+   that the elements of the set should be separated by a comma but be a vector of
+   length 1 e.g. ("y,n"), rather than ("y","n").
 }
 Rulesets for variable type \strong{date}:
 \itemize{
-   \item present/absent: fill in later
+   \item present/absent: indicate that a value must be present (i.e. cannot be NA) with "1", and
+   that a value must be absent (i.e. must be NA) with "0".
 }
 }
 

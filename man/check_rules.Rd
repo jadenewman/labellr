@@ -9,11 +9,7 @@ check_rules(data, rules)
 \arguments{
 \item{data}{data.frame whose rows are to be categorised according to a provided set of rules.}
 
-\item{rules}{The first column of this data frame should be the name of the (to be created)
-classification variable and subsequent columns should be the names of the variables which
-are to be tested against a rule.
-Each row of the rules data.frame should contain a classification level in the first column and
-from there the rules to test each column against.}
+\item{rules}{rules #!.}
 }
 \description{
 check_rules

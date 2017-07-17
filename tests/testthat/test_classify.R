@@ -1,1 +1,1 @@
-expect_true(num_classify(c(1), ">=0"))
+expect_true(numeric_classify(var_name = "var", data = data.frame(var = c(1)), ">=0"))
