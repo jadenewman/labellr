@@ -52,4 +52,3 @@ Rulesets for variable type \strong{date}:
    that a value must be absent (i.e. must be NA) with "0".
 }
 }
-

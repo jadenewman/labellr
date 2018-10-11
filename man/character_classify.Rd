@@ -19,4 +19,3 @@ logical vector indicating which elements of the data match the rule.
 \description{
 character_classify
 }
-

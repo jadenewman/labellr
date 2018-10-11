@@ -14,4 +14,3 @@ check_rules(data, rules)
 \description{
 check_rules
 }
-

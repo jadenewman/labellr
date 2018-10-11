@@ -225,7 +225,13 @@ classify <- function(data, definitions, default_def = "unknown") {
   # data.frame?
   stopifnot(is.data.frame(data))
   # replace
-  data[data == ""] <- NA
+  blank_to_na <- function(x) {
+    if(is.character(x)) {
+      x[x == ""] <- NA
+    }
+    x
+  }
+  data[] <- lapply(data,blank_to_na)
 
   ## check definitions
   # data.frame?

@@ -20,4 +20,3 @@ character, or date for each variable.}
 \description{
 check_type
 }
-
