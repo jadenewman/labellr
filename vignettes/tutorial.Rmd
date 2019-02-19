@@ -13,24 +13,59 @@ vignette: >
 
 ```{r, include=FALSE}
 ## get locations of files
+devtools::load_all()
 package_loc <- system.file(package = "labellr")
 ext_path <- file.path(package_loc, "extdata")
 ```
 
 ## Introduction
 
-The motivation behind `labellr` is the following. You need to categorise each row of a data frame into 
-one of (many) possible levels of a summary variable. This categorisation can be done according to a set
-of rules that are defined in advance. Writing code that performs this categorisation may
-be lengthy, making it difficult to debug and understand for newbies. For example, you may have a medical
+The motivation behind `labellr` is the following. You need to categorise each row of a dataset into 
+one of (many) possible levels of a summary/grouping variable. This categorisation can be done according to a set
+of rules that are defined in advance (i.e. is deterministic). Writing code that performs this categorisation may
+be lengthy, making it difficult to debug and understand. For example, you may have a medical
 dataset that contains results of various measurements, diagnosis codes and treatment outcomes but that 
-needs the addition of one or more summary variables to be conveniently analysed.
-The goal of `labellr` is to minimise the number of lines of code required in categorising the data by allowing the use of tabular files (e.g. MS Excel) to define each level of the summary variable. It does this by.. 
+needs the addition of one or more summary variables to allow convenient analysis.
+The goal of `labellr` is to enable the use of tabular files (e.g. MS Excel) in defining each level of the summary/grouping variable according to set of rules (e.g. the presence/absence of a condition) - a definitions table. This definitions table of rules is then used by `labellr::classify` to categorise each row of the analysis dataset into one (or more) of the levels of the summary/grouping variable.
+
+![labellr workflow](overall-process.png)
 
 ## Defining your summary categories
 
-As a toy example, suppose a medical clinic performs either X-ray, FMRI or some form of surgery. Using 
-your preferred tabular data editor you outline the rules that define each level of the summary variable 'treatment'. 
+As an example, suppose a medical clinic performs either X-ray, FMRI or minor surgery. Using 
+your preferred tabular data editor you outline the rules that define each level of the summary variable 'treatment'. (Alternatively these can be built in R using tbd)
+
+A first step is to indicate the datatype for each variable that will be used in the data classification. `labellr` uses three datatypes, `date`, `num` and `char` - which should indicated in the `datatype` row of the definitions table. The correspondance of `date`, `num` and `char` to R classes is shown in table 1. 
+
+```{r}
+t1 <- data.frame(c("num","char","date"),
+                 c("numeric","character","..."))
+knitr::kable(t1,caption = "Table 1. labellr datatype and R class correspondance",
+             col.names = c("labellr datatype","R class"))
+```
+
+There exist different rulesets depending on the datatype is chosen (below is from `?labellr::classify`):
+
+_Rulesets for variable type `num`_:  
+
+* present/absent: indicate that a value must be present (i.e. cannot be NA) with "1", and that a value must be absent (i.e. must be NA) with "0".  
+
+* comparison to a constant: compare the entered value to a numeric constant (scalar) X with any of "==X", ">=X", "<=X", ">X" or "<X". For example, ">=0".  
+
+_Rulesets for variable type `char`_:  
+
+* takes a specified value: indicate that the value must match a particular character, for example "y".  
+
+* does not take a specified value: indicate that the value must not match a particular character, for example "!y" indicates the value must not be "y".  
+
+* takes a value in a set: indicate that the value must be in a specific character set. Note that the elements of the set should be separated by a comma but be a vector of length 1 e.g. ("y,n"), rather than ("y","n").  
+
+_Rulesets for variable type `date`_:  
+
+* present/absent: indicate that a value must be present (i.e. cannot be NA) with "1", and that a value must be absent (i.e. must be NA) with "0".
+
+
+
 
 Entering
 a 1 indicates this value must be present, while entering a 0 indicates this value must be absent. Leaving a cell blank (assuming blank in read into R as NA) will allow that variable to take any value. 
