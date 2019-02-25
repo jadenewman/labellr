@@ -2,11 +2,11 @@
 
 [![Travis-CI Build Status](https://travis-ci.org/oizin/labellr.svg?branch=master)](https://travis-ci.org/oizin/labellr)
 
-Deterministic labelling of registry data
+Deterministic labelling of data
 
 ## Overview
 
-
+The goal of `labellr` is to enable the use of tabular files (e.g. MS Excel) in defining each level of the summary/grouping variable according to set of rules (e.g. the presence/absence of a condition) - a *definitions table*. This *definitions table* of rules is then used by `labellr::classify` to categorise each row of the analysis dataset into one (or more) of the levels of the summary/grouping variable.
 ## Installation
 
 ```r
@@ -34,14 +34,14 @@ The core function in `labellr` is `classify`.
 
 # read in definitions table
 > tmt_def <- read.csv(file.path(ext_path, "treatment_definitions.csv"), stringsAsFactors = FALSE)
-> print(tmt_def,quote=TRUE)
+> print(tmt_def,quote=TRUE) 
    treatment clinic_date   xray   fmri surgery_date complications
 1 "datatype"      "date" "char" "char"       "date"        "char"
 2     "xray"         "1"    "y"   "!y"          "0"            ""
 3     "fmri"         "1"   "!y"    "y"          "0"            ""
 4  "surgery"         "0"   "!y"   "!y"          "1"            ""
 
-# classify data
+# classify data the data into the summary variable based on the definitions table
 > library(labellr)
 > classify(clinic_data,tmt_def)
   treatment clinic_date xray fmri surgery_date         complications
