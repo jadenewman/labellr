@@ -1,7 +1,7 @@
 Package: labellr
 Type: Package
 Title: Categorise Your Data
-Version: 0.1.5
+Version: 0.1.6
 Author: Oisin Fitzgerald
 Maintainer: Oisin Fitzgerald <o.fitzgerald@unsw.edu.au>
 Description: To be added.
@@ -12,5 +12,5 @@ Suggests:
     testthat,
     knitr,
     rmarkdown
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr

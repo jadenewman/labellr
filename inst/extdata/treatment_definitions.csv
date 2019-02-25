@@ -1,5 +1,5 @@
 treatment,clinic_date,xray,fmri,surgery_date,complications
-datatype,date,char,char,date,char
+datatype,date,character,character,date,character
 xray,1,y,!y,0,
 fmri,1,!y,y,0,
 surgery,0,!y,!y,1,
