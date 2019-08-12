@@ -2,6 +2,7 @@
 
 [![Travis-CI Build Status](https://travis-ci.org/oizin/labellr.svg?branch=master)](https://travis-ci.org/oizin/labellr)
 [![codecov](https://codecov.io/gh/oizin/labellr/branch/master/graph/badge.svg)](https://codecov.io/gh/oizin/labellr)
+  
 Deterministic labelling of data
 
 ## Overview
